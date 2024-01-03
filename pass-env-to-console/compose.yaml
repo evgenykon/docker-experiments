@@ -1,0 +1,10 @@
+services:
+  console:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+        - ./console:/usr/src/app
+    environment:
+      - APP_VERSION_1=${APP_VERSION_1}
+      - APP_VERSION_2=2
