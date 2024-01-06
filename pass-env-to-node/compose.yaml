@@ -1,0 +1,12 @@
+services:
+  node:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+        - ./node:/usr/src/app
+    environment:
+      - VAR_FROM_COMPOSE=var from compose
+      - VAR_FROM_SYS_ENV=${VAR_FROM_SYS_ENV}
+    env_file:
+      - .env
