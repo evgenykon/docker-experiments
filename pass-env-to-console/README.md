@@ -14,4 +14,6 @@ Goals:
 - docker compose up
 
 Result: file 'result.txt' with version '1'
-Update: pass value both from current env variable (APP_VERSION_1) and compose.yaml (APP_VERSION_2)
+
+### Update
+I've pass value both from current env variable (APP_VERSION_1) and compose.yaml (APP_VERSION_2)
