@@ -12,8 +12,8 @@ Goals:
 - (inside container) run `yarn create nuxt-app .`
 - edit nuxt.config.js (port, host, env)
 - edit pages/index.vue (show env vars)
-- docker compose run --rm nuxt yarn build
 - export VAR_FROM_SYS_ENV='var from sysenv'
+- docker compose run --rm nuxt yarn build
 - docker compose build
 - docker compose up
 - open localhost:3000 in browser
