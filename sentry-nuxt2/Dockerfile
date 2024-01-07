@@ -1,0 +1,15 @@
+FROM node:20
+
+WORKDIR /usr/src/app
+
+ARG SENTRY_DSN
+ENV SENTRY_DSN=${SENTRY_DSN}
+ARG APP_ENV
+ENV APP_ENV=${APP_ENV}
+ARG RELEASE_TAG
+ENV RELEASE_TAG=${RELEASE_TAG}
+
+EXPOSE 3000
+
+#CMD ["yarn", "run", "start"]
+CMD ["yarn", "run", "dev"]

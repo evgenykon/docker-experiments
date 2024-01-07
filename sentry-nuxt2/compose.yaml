@@ -1,0 +1,11 @@
+services:
+  nuxt:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    volumes:
+        - ./nuxt:/usr/src/app
+    env_file:
+      - .env
