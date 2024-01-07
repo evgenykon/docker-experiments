@@ -25,6 +25,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    '~/plugins/sentry.plugin.ts',
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -67,5 +68,22 @@ export default {
     tracing: true,
     disableServerSide: true,
     initialize: true,
+    clientIntegrations: {
+      Vue: { attachProps: true },
+      ExtraErrorData: {
+        collectWindowErrors: true,
+        collectPromiseErrors: true,
+        collectVueXStoreErrors: true,
+        showCustomEventDetails: true,
+        showCustomEventData: true,
+      },
+    },
+
+  },
+
+  env: {
+    APP_ENV: process.env.APP_ENV,
+    RELEASE_ID: process.env.RELEASE_ID,
+    SENTRY_DSN: process.env.SENTRY_DSN,
   }
 }

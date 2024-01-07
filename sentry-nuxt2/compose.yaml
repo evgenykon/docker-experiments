@@ -7,5 +7,7 @@ services:
       - 3000:3000
     volumes:
         - ./nuxt:/usr/src/app
-    env_file:
-      - .env
+    environment:
+      - APP_ENV=${APP_ENV}
+      - SENTRY_DSN=${SENTRY_DSN}
+      - RELEASE_ID=${RELEASE_ID}
