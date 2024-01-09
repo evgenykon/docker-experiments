@@ -16,7 +16,7 @@ Goals:
 - cook a plugin 'plugins/sentry.plugin.ts' according to https://typescript.nuxtjs.org/cookbook/plugins/
 - define SENTRY_DSN with `export SENTRY_DSN='...'`
 - define APP_ENV with `export APP_ENV='production'`
-- define RELEASE_TAG with `export RELEASE_TAG='1.0.0'` or by some other way (e.g. "export RELEASE_ID=`git rev-parse --short HEAD`")
+- define RELEASE_ID with `export RELEASE_ID='1.0.0'` or by some other way (e.g. "export RELEASE_ID=`git rev-parse --short HEAD`")
 - docker compose build
 - docker compose run --rm nuxt yarn build
 - docker compose up
