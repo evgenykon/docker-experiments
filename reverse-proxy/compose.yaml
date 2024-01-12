@@ -19,7 +19,7 @@ services:
     ports:
       - 8443:8443
     environment:
-      - TARGET_HOST=env.yaizy.io
+      - TARGET_HOST=nginx.com
       - PORT=8443
     volumes:
       - ./nginx/default.conf.https.template:/etc/nginx/templates/default.conf.template
