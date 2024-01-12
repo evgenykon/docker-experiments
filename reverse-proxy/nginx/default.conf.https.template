@@ -43,16 +43,11 @@ server {
 #        proxy_set_header    X-Real-IP        $remote_addr;
 #        proxy_set_header    X-NginX-Proxy    true;
 
-#        proxy_ignore_headers    Vary;
-#        proxy_hide_header       Vary;
-#        proxy_ignore_headers    X-Accel-Expires;
-#        proxy_hide_header       X-Accel-Expires;
-#        proxy_ignore_headers    Expires;
-#        proxy_hide_header       Expires;
-#        proxy_ignore_headers    Cache-Control;
-#        proxy_hide_header       Cache-Control;
+        proxy_ignore_headers    Cache-Control;
+        proxy_hide_header       Cache-Control;
 
-#        add_header Cache-Control public;
+        expires     1h;
+        add_header  Cache-Control public;
 
     }
 
