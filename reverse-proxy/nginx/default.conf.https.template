@@ -1,0 +1,62 @@
+proxy_cache_path /var/nginx/cache levels=1:2 keys_zone=STATIC_HTTPS:10m inactive=24h max_size=1g  use_temp_path=off;
+
+log_format rt_cache '$time_local $remote_addr - $upstream_cache_status '
+                    '"$request" $status $body_bytes_sent '
+                    '"$http_referer" "$http_user_agent"';
+
+# external HTTPS-requests to base domain
+server {
+    server_name _;
+    listen ${PORT}; #ssl;
+    listen [::]:${PORT}; #ssl;
+
+    #ssl_certificate /etc/nginx/certs/${SSL_CERT};
+    #ssl_certificate_key /etc/nginx/certs/${SSL_CERT_KEY};
+
+    root /var/www/html;
+    client_max_body_size 50m;
+    charset UTF-8;
+    index index.html;
+
+    access_log /var/log/nginx/access.log rt_cache;
+
+    location / {
+        proxy_ssl_server_name   on;
+        proxy_pass              https://${TARGET_HOST};
+        proxy_set_header        Host ${TARGET_HOST};
+
+        proxy_cache             STATIC_HTTPS;
+
+        proxy_cache_valid       200 304 60m;
+
+        proxy_cache_use_stale   error timeout invalid_header updating http_500 http_502 http_503 http_504;
+
+        proxy_read_timeout      3s;
+        proxy_connect_timeout   3s;
+        proxy_send_timeout      3s;
+
+        proxy_ssl_session_reuse on;
+        proxy_cache_background_update on;
+
+#        proxy_set_header    Upgrade $http_upgrade;
+#        proxy_set_header    Connection 'upgrade';
+#        proxy_set_header    X-Real-IP        $remote_addr;
+#        proxy_set_header    X-NginX-Proxy    true;
+
+#        proxy_ignore_headers    Vary;
+#        proxy_hide_header       Vary;
+#        proxy_ignore_headers    X-Accel-Expires;
+#        proxy_hide_header       X-Accel-Expires;
+#        proxy_ignore_headers    Expires;
+#        proxy_hide_header       Expires;
+#        proxy_ignore_headers    Cache-Control;
+#        proxy_hide_header       Cache-Control;
+
+#        add_header Cache-Control public;
+
+    }
+
+    location /favicon.ico {
+        return 200;
+    }
+}
