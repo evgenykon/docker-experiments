@@ -1,0 +1,12 @@
+services:
+  proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    environment:
+      - TARGET_HOST=www.google.com
+      - PORT=8080
+    volumes:
+      - ./nginx/:/etc/nginx/templates:rw,cached
