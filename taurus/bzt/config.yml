@@ -1,0 +1,11 @@
+execution:
+  - concurrency: 50
+    ramp-up: 20s
+    hold-for: 1m
+    scenario: IndexPage
+
+scenarios:
+  IndexPage:
+    default-address: https://api.domain.io
+    requests:
+      - /test/healthcheck
