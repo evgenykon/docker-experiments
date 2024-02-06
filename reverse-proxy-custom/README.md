@@ -3,6 +3,9 @@
 ```mermaid
 sequenceDiagram
     Client->>Nginx: GET /
-    Nginx-->Nginx: check cache
+    Nginx-->Nginx: check static
+    Nginx->>Proxy: request
+    Proxy-->Target: download source
+    Proxy->>Nginx: store as static
     Nginx->>Client: response
 ```
