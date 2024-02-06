@@ -1,1 +1,2 @@
-reverse-proxy/cache/*
+reverse-proxy-nginx/cache/*
+reverse-proxy-custom/static/*
