@@ -1,0 +1,8 @@
+FROM nginx:latest
+
+ARG PORT
+ENV PORT=${PORT}
+ARG TARGET_HOST
+ENV TARGET_HOST=${TARGET_HOST}
+
+WORKDIR /var/www/html
