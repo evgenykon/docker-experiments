@@ -40,3 +40,9 @@ services:
       - 8081:8081
     #command: "npm start"
     command: "npm run dev"
+
+  cache_warm:
+    image: amazonlinux
+    depends_on:
+      - nginx
+    command: "curl --retry 5 --retry-max-time 120 --retry-all-errors http://nginx:8080/_generate_index"
