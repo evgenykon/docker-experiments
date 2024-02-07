@@ -11,6 +11,10 @@ services:
     volumes:
       - ./nginx/default.conf.http.template:/etc/nginx/templates/default.conf.template
       - ./static/:/var/www/html/:rw
+    depends_on:
+      - cacher
+      - backend
+
   cacher:
     image: "node:20"
     working_dir: /var/www/app/
@@ -20,6 +24,7 @@ services:
     environment:
       - TARGET_HOST=yaizy.io
       - PROXY_PORT=8081
+      - CACHE_DIR=./static
     expose:
       - 8081:8081
     #command: "npm start"
