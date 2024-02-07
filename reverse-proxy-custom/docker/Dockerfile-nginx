@@ -4,3 +4,5 @@ ARG PORT
 ENV PORT=${PORT}
 
 WORKDIR /var/www/html
+
+RUN "touch ./static/index.html"
