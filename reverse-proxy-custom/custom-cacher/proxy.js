@@ -45,7 +45,7 @@ app.get('/_generate_index', async (req, res) => {
 
     const dirFiles = fs.readdirSync('./static/');
     console.log('Generating index: result files', dirFiles);
-    res.send(pageSource ?? 'Error')
+    res.send('Index pages generated')
 })
 
 app.get('/*', async(req, res) => {

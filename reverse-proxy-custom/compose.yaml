@@ -24,3 +24,14 @@ services:
       - 8081:8081
     #command: "npm start"
     command: "npm run dev"
+  backend:
+    image: "node:20"
+    working_dir: /var/www/app/
+    volumes:
+      - ./backend:/var/www/app/
+    environment:
+      - PORT=8082
+    expose:
+      - 8081:8081
+    #command: "npm start"
+    command: "npm run dev"

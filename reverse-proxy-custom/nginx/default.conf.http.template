@@ -18,6 +18,10 @@ server {
         try_files $uri $uri/ $uri.html;
     }
 
+    location /api {
+        try_files $uri $uri/ @backend;
+    }
+
     location ~ \.html$ {
         try_files $uri @cachedProxy;
     }
@@ -26,6 +30,11 @@ server {
         proxy_pass              http://cacher:8081;
         proxy_set_header        Host ${TARGET_HOST};
         proxy_redirect          off;
+        proxy_read_timeout      10s;
+    }
+
+    location @backend {
+        proxy_pass              http://backend:8082;
         proxy_read_timeout      10s;
     }
 }
