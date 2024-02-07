@@ -29,6 +29,7 @@ services:
       - 8081:8081
     #command: "npm start"
     command: "npm run dev"
+    
   backend:
     image: "node:20"
     working_dir: /var/www/app/
@@ -41,7 +42,7 @@ services:
     #command: "npm start"
     command: "npm run dev"
 
-  cache_warm:
+  warmer:
     image: amazonlinux
     depends_on:
       - nginx

@@ -18,20 +18,20 @@ const fetchSourcePage = (url, fileName) => {
             follow_max: 1,
             parse_response: false,
         }, function(error, response) {
-            console.log('Proxy request: GET ', url, response.statusCode);
+            console.log('   Proxy request: GET ', url, response.statusCode);
             if (!error && response.statusCode === 200) {
-                console.log('Store to cache:', url, '-->', `${cacheDir}/${fileName}`);
+                console.log('   Store to cache:', url, '-->', `${cacheDir}/${fileName}`);
                 try {
                     fs.writeFileSync(`${cacheDir}/${fileName}`, response.body);
                 } catch (err) {
-                    console.error('Proxy request storing error:', response.statusCode, url);
+                    console.error(' Proxy request storing error:', response.statusCode, url);
                     reject({message: 'Caching error',  statusCode: 500});
                     return;
                 }
                 resolve(response.body);
                 return;
             }
-            console.error('Proxy request error:', url, response.statusCode);
+            console.error(' Proxy request error:', url, response.statusCode);
             reject({message: 'Caching error',  statusCode: response.statusCode});
         });
     });
@@ -46,15 +46,28 @@ app.get('/_generate_index', async (req, res) => {
         console.error('Generating index error:', err);
     }
 
+    console.log('-- Refresh stored pages ---');
     const dirFiles = fs.readdirSync(cacheDir);
-    dirFiles.forEach((fileName) => {
+    for (let fileName of dirFiles) {
         if (fileName === 'index.html' || fileName === '404.html') {
-            return;
+            console.log(`   Check ${fileName} - skip`);
+            continue;
         }
-        console.log('Drop cache file', `${cacheDir}/${fileName}`);
+        if (fileName.match(/\.html$/)) {
+            const page = fileName.replace(/\.html$/, '')
+            try {
+                console.log(`${fileName} - requesting --> `, `https://${target}/${page}`);
+                await fetchSourcePage(`https://${target}/${page}`, fileName);
+                console.log('   Refresh page OK: ', `https://${target}/${page}`, '-->', fileName);
+                continue;
+            } catch (e) {
+                console.error(' Refresh page error', page, fileName);
+            }
+        }
+        console.log(`   Unlink file: ${fileName} - `);
         fs.unlinkSync(`${cacheDir}/${fileName}`);
+    }
 
-    })
     res.send({success:true})
 })
 
@@ -90,7 +103,7 @@ app.get('/*', async(req, res, next) => {
 })
 
 const checkCache = (page) => {
-    if (fs.existsSync(`404-${cacheDir}/${page}.tmp`)) {
+    if (fs.existsSync(`${cacheDir}/404-${page}.tmp`)) {
         return false;
     }
     if (fs.existsSync(`${cacheDir}/${page}.html`)) {
@@ -100,16 +113,16 @@ const checkCache = (page) => {
 }
 
 const setCacheMiss = (page) => {
-    fs.writeFileSync(`404-${cacheDir}/${page}.tmp`, '');
+    fs.writeFileSync(`${cacheDir}/404-${page}.tmp`, '');
 }
 
 const errorHandler = (err, req, res, next) => {
-    console.log('-- Error handler ---', err);
+    console.log('   Error handler -->', req.url, err);
     const errStatus = err.statusCode || 500;
     let errorPage = err.message || 'Something went wrong';
     const errorPagePath = `${cacheDir}/${errStatus}.html`;
     if (err.statusCode && fs.existsSync(errorPagePath)) {
-        console.log('Response cached template for error code', errorPagePath, errorPage);
+        console.log('   Response cached template for error code', errorPagePath, errorPage);
         res.sendFile(`404.html`, {root: cacheDir})
         return
     }
