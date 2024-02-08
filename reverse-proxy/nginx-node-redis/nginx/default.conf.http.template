@@ -1,0 +1,44 @@
+server {
+    server_name _;
+
+    listen ${PORT};
+    listen [::]:${PORT};
+
+    root /var/www/html;
+    client_max_body_size 50m;
+    charset UTF-8;
+
+    index index.html;
+
+    location /_warm_cache {
+        try_files $uri @cachedProxy;
+    }
+
+    location / {
+        try_files $uri $uri/ @cachedProxy;
+    }
+
+#    location /api {
+#        try_files $uri $uri/ @backend;
+#    }
+
+    location /favicon.ico {
+        return 200;
+    }
+
+#    location ~ \.html$ {
+#        try_files $uri @cachedProxy;
+#    }
+
+    location @cachedProxy {
+        proxy_pass              http://proxy-cache:8081;
+        proxy_set_header        Host ${TARGET_HOST};
+        proxy_redirect          off;
+        proxy_read_timeout      10s;
+    }
+
+#    location @backend {
+#        proxy_pass              http://backend:8082;
+#        proxy_read_timeout      10s;
+#    }
+}
