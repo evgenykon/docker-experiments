@@ -5,8 +5,10 @@ import proxyClient from "./proxy-client.js";
 
 const app = express()
 const port = process.env.PROXY_PORT ?? 8000
-const target = process.env.TARGET_HOST ?? 'localhost'
-
+const target = process.env.TARGET_HOST ?? 'target-host'
+const baseHost = process.env.BASE_HOST ?? 'localhost'
+const bypassPages = ['/robots.txt', '/sitemap.xml',];
+const postProcessPages = ['robots_txt', 'sitemap_xml',];
 
 app.get('/_warm_cache', async (req, res) => {
     console.log('-- Start warming cache ---');
@@ -14,31 +16,11 @@ app.get('/_warm_cache', async (req, res) => {
     try {
         await fetchSourcePage(`https://${target}/`, clearPageName('/'));
         await fetchSourcePage(`https://${target}/404`, clearPageName('/404'));
+        await fetchSourcePage(`https://${target}/robots.txt`, clearPageName('/robots.txt'));
+        await fetchSourcePage(`https://${target}/sitemap.xml`, clearPageName('/sitemap.xml'));
     } catch (err) {
         console.error('Generating index error:', err);
     }
-
-   // console.log('-- Refresh stored pages ---');
-   // const dirFiles = fs.readdirSync(cacheDir);
-    //for (let fileName of dirFiles) {
-        // if (fileName === 'index.html' || fileName === '404.html') {
-        //     console.log(`   Check ${fileName} - skip`);
-        //     continue;
-        // }
-        // if (fileName.match(/\.html$/)) {
-        //     const page = fileName.replace(/\.html$/, '')
-        //     try {
-        //         console.log(`${fileName} - requesting --> `, `https://${target}/${page}`);
-        //         await fetchSourcePage(`https://${target}/${page}`, fileName);
-        //         console.log('   Refresh page OK: ', `https://${target}/${page}`, '-->', fileName);
-        //         continue;
-        //     } catch (e) {
-        //         console.error(' Refresh page error', page, fileName);
-        //     }
-        // }
-      //  console.log(`   Unlink file: ${fileName} - `);
-       // fs.unlinkSync(`${cacheDir}/${fileName}`);
-    //}
 
     res.send({success:true})
 })
@@ -61,7 +43,7 @@ app.get('/*', async(req, res, next) => {
 
     let page = clearPageName(req.url);
 
-    console.log(`REQUEST ${req.url}, page key: ${page}`);
+    console.log(`REQUEST "${req.url}", page key: "${page}"`);
 
     try {
         const status = await checkCache(page);
@@ -78,7 +60,14 @@ app.get('/*', async(req, res, next) => {
             return;
         }
 
-        const body = await fetchSourcePage(`https://${target}/${page}`, page);
+        let proxyUrl = `https://${target}`;
+        if (bypassPages.includes(req.url)) {
+            proxyUrl += req.url;
+        } else {
+            proxyUrl += `/${page}`;
+        }
+
+        const body = await fetchSourcePage(proxyUrl, page);
         console.log(`   Response from proxy - 200 OK`);
         res.send(body);
 
@@ -93,13 +82,14 @@ app.get('/*', async(req, res, next) => {
 
 const checkCache = async (page) => {
     try {
-        const hasMiss = await cacheGet(`proxy-cache-miss-${page}`);
-        const hasPage = await cacheGet(getPageCacheKey(page));
-        console.log(`   checkCache --> ${page}, miss: ${hasMiss}, page: ${!!hasPage}`)
-        if (!!hasMiss) {
+        const hasMiss = !!(await cacheGet(`proxy-cache-miss-${page}`));
+        const pageKey = getPageCacheKey(page);
+        const hasPage = !!(await cacheGet(pageKey));
+        console.log(`   checkCache --> "/${page}", key "${pageKey}", hasMiss: ${hasMiss}, hasPage: ${hasPage}`)
+        if (hasMiss) {
             return false;
         }
-        if (!!hasPage) {
+        if (hasPage) {
             return true;
         }
     } catch (err) {
@@ -108,9 +98,9 @@ const checkCache = async (page) => {
 
     return null;
 }
-//
+
 const setCacheMiss = async(page) => {
-    console.log(`   setCacheMiss --> /${page}`)
+    console.log(`   setCacheMiss --> "/${page}"`)
     try {
         await cacheSet(`proxy-cache-miss-${page}`, '1', 60);
     } catch (err) {
@@ -120,15 +110,27 @@ const setCacheMiss = async(page) => {
 
 
 const fetchSourcePage = async (url, page) => {
-    const response = await proxyClient(url);
-    console.log('   Store to cache:', url, '-->', `/${page}`);
-    await cacheSet(getPageCacheKey(page), response, 60*60);
+    let response = await proxyClient(url);
+    const pageKey = getPageCacheKey(page);
+    console.log('   Store to cache:', url, '-->', pageKey);
+
+    if (postProcessPages.includes(page)) {
+        response = postProcess(page, response);
+    }
+
+    await cacheSet(pageKey, response, 60*60);
 
     return response;
 }
 
+const postProcess = (page, body) => {
+    console.log('   Post processing page:', page);
+    body = body.replaceAll(target, baseHost);
+    return body;
+}
+
 const errorHandler = (err, req, res, next) => {
-    console.log(`   Error handler --> ${req.url}`, err);
+    console.log(`   Error handler --> "${req.url}"`, err);
 
     const errStatus = err.statusCode || 500;
     let errorData = err.message || 'Something went wrong';
