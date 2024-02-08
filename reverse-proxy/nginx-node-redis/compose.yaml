@@ -6,7 +6,7 @@ services:
       - 8080:8080
     environment:
       - PORT=8080
-      - TARGET_HOST=yaizy.io
+      - TARGET_HOST=google.com
     volumes:
       - ./nginx/default.conf.http.template:/etc/nginx/templates/default.conf.template
     depends_on:
@@ -18,7 +18,7 @@ services:
     volumes:
       - ./proxy-cache:/var/www/app/
     environment:
-      - TARGET_HOST=yaizy-io.framer.website
+      - TARGET_HOST=google.com
       - PROXY_PORT=8081
     expose:
       - 8081:8081

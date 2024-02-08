@@ -6,6 +6,9 @@ execution:
 
 scenarios:
   IndexPage:
-    default-address: https://api.domain.io
+    default-address: https://test-3.#
     requests:
-      - /test/healthcheck
+      - /
+      - /courses
+      - /blog
+      - /api/test/healthcheck

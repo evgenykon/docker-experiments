@@ -22,7 +22,7 @@ services:
       - ./custom-cacher:/var/www/app/
       - ./static/:/var/www/app/static/:rw
     environment:
-      - TARGET_HOST=yaizy.io
+      - TARGET_HOST=google.com
       - PROXY_PORT=8081
       - CACHE_DIR=./static
     expose:
