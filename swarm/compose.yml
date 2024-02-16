@@ -1,5 +1,5 @@
 services:
-  web:
+  nginx-1:
     image: nginx
     volumes:
       - ./template-1/default.conf:/etc/nginx/templates/default.template
@@ -14,6 +14,18 @@ services:
       experiment:
         aliases:
           - web1.experiment
+
+  nginx-2:
+    image: nginx
+    volumes:
+      - ./nginx/public-2:/usr/share/nginx/html:ro
+    environment:
+      - NGINX_HOST=ubuntu.local
+      - NGINX_PORT=8081
+    networks:
+      experiment:
+        aliases:
+          - web2.experiment
 
 networks:
   experiment:
