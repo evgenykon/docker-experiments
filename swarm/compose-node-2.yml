@@ -9,6 +9,8 @@ services:
     environment:
       - NGINX_HOST=macos.local
       - NGINX_PORT=8080
+    networks:
+      - experiment
 
 networks:
-  - experiment
+  experiment:
