@@ -2,7 +2,7 @@ services:
   web:
     image: nginx
     volumes:
-      - ./conf-1/default.conf:/etc/nginx/conf.d/default.conf
+      - ./template-1/default.conf:/etc/nginx/templates/default.template
       - ./nginx/public-1:/usr/share/nginx/html:ro
     ports:
       - "8080:80"

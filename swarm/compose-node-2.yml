@@ -5,7 +5,7 @@ services:
       - ./nginx/public-2:/usr/share/nginx/html:ro
     environment:
       - NGINX_HOST=ubuntu.local
-      - NGINX_PORT=8080
+      - NGINX_PORT=8081
     networks:
       experiment:
         aliases:
