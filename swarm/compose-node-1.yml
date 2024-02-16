@@ -2,15 +2,18 @@ services:
   web:
     image: nginx
     volumes:
-      - ./templates:/etc/nginx/templates
+      - ./conf-1/default.conf:/etc/nginx/conf.d/default.conf
       - ./nginx/public-1:/usr/share/nginx/html:ro
     ports:
       - "8080:80"
+      - "8081:81"
     environment:
       - NGINX_HOST=macos.local
       - NGINX_PORT=8080
     networks:
-      - experiment
+      experiment:
+        aliases:
+          - web1.experiment
 
 networks:
   experiment:
