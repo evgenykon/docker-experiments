@@ -1,16 +1,12 @@
-version: '3.4'
+version: '3.8'
 
 services:
   nginx-1:
     image: nginx
+    restart: 'always'
     volumes:
       - ./template-1/default.conf:/etc/nginx/templates/default.template
       - ./nginx/public-1:/usr/share/nginx/html:ro
-    ports:
-      - published: 8080
-        target: 80
-      - published: 8081
-        target: 81
     environment:
       - NGINX_HOST=macos.local
       - NGINX_PORT=8080
@@ -18,9 +14,13 @@ services:
       experiment:
         aliases:
           - web1.experiment
+    deploy:
+      replicas: 1
+      endpoint_mode: vip
 
   nginx-2:
     image: nginx
+    restart: 'always'
     volumes:
       - ./nginx/public-2:/usr/share/nginx/html:ro
     environment:
@@ -30,6 +30,9 @@ services:
       experiment:
         aliases:
           - web2.experiment
+    deploy:
+      replicas: 1
+      endpoint_mode: vip
 
 networks:
   experiment:
