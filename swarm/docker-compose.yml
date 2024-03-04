@@ -3,13 +3,13 @@ version: '3.8'
 services:
   nginx-1:
     image: nginx
-    restart: 'always'
     volumes:
-      - ./nginx/template-1/default.conf:/etc/nginx/templates/default.template
+      - ./nginx/template-1/default.conf:/etc/nginx/templates/default.conf.template
       - ./nginx/public-1:/usr/share/nginx/html:ro
     environment:
       - NGINX_HOST=macos.local
       - NGINX_PORT=8080
+      - PROXY_PORT=8081
     ports:
       - target: 80
         published: 8080
@@ -28,7 +28,6 @@ services:
 
   nginx-2:
     image: nginx
-    restart: 'always'
     volumes:
       #- ./nginx/template-2/default.conf:/etc/nginx/templates/default.template
       - ./nginx/public-2:/usr/share/nginx/html:ro
