@@ -29,9 +29,9 @@ services:
   nginx-2:
     image: nginx
     restart: 'always'
-    #volumes:
+    volumes:
       #- ./nginx/template-2/default.conf:/etc/nginx/templates/default.template
-      #- ./nginx/public-2:/usr/share/nginx/html:ro
+      - ./nginx/public-2:/usr/share/nginx/html:ro
     environment:
       - NGINX_HOST=ubuntu.local
       - NGINX_PORT=8081
