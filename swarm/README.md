@@ -27,6 +27,9 @@ dockerd    836            root   32u  IPv6  23543      0t0  TCP *:2377 (LISTEN)
 ```
 docker swarm join --token <from output> <ZeroTier host IP>:2377
 ```
+
+Next commands shoult execute just from 'manager' host:
+
 4. Check all nodes been visible for manager `docker node ls`
 5. Create network on manager host `docker network create -d overlay experiment`
 6. Check new network been created `docker network ls`
