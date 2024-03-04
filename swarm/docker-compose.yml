@@ -6,10 +6,6 @@ services:
     volumes:
       - ./nginx/template-1/default.conf:/etc/nginx/templates/default.conf.template
       - ./nginx/public-1:/usr/share/nginx/html:ro
-    environment:
-      - NGINX_HOST=macos.local
-      - NGINX_PORT=8080
-      - PROXY_PORT=8081
     ports:
       - target: 8080
         published: 80
@@ -29,18 +25,14 @@ services:
   nginx-2:
     image: nginx
     volumes:
-      #- ./nginx/template-2/default.conf:/etc/nginx/templates/default.template
+      - ./nginx/template-2/default.conf:/etc/nginx/templates/default.template
       - ./nginx/public-2:/usr/share/nginx/html:ro
-    environment:
-      - NGINX_HOST=ubuntu.local
-      - NGINX_PORT=8081
     networks:
       experiment:
     deploy:
       placement:
         constraints:
           - "node.labels.TAG==host2"
-#      replicas: 2
 
 networks:
   experiment:
