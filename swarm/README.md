@@ -12,37 +12,35 @@ flowchart TD
     Nginx2_8082 --file resolving--> Response2
 ```
 
-### my steps
+### Steps to reproduce stack
 Based on official manuals: 
-https://docs.docker.com/engine/swarm/
-https://docs.docker.com/network/network-tutorial-overlay/#use-the-default-overlay-network
+- https://docs.docker.com/engine/swarm/
+- https://docs.docker.com/network/network-tutorial-overlay/#use-the-default-overlay-network
 
-1. Run container in first host (Ubuntu inside virtualbox with ZeroTier VPN): `docker compose --file compose-node-1.yml up -d`
-2. Create a swarm manager in same host (it will be a manager): ` docker swarm init --advertise-addr <ZeroTier host IP>`
-3. Check port is open:
+1. Create a swarm manager in your first host (it will be a manager): ` docker swarm init --advertise-addr <ZeroTier host IP>`
+2. Check port is open:
 ``` 
 $ sudo lsof -PiTCP -sTCP:LISTEN | grep 2377`
 dockerd    836            root   32u  IPv6  23543      0t0  TCP *:2377 (LISTEN)
 ```
-4. Connect to second node and join with command been outputs from swarm init:
+3. On second host join to cluster with command been outputs from swarm init:
 ```
 docker swarm join --token <from output> <ZeroTier host IP>:2377
 ```
-5. Check nodes on manager `docker node ls`
-6. Check networks on manager `docker network ls`
-7. Create network on manager host `docker network create -d overlay experiment`
-8. Setup labels for nodes:
+4. Check all nodes been visible for manager `docker node ls`
+5. Create network on manager host `docker network create -d overlay experiment`
+6. Check new network been created `docker network ls`
+7. Setup labels for nodes (with ids from node list):
 ``` 
-docker node update --label-add TAG=ubuntu ubuntudev
-docker node update --label-add TAG=mac linuxkit-aeae2bffe88c
+docker node update --label-add TAG=host1 <node id>
+docker node update --label-add TAG=host2 <node id>
 ```
-9. Deploy stack
-```
-docker stack deploy -c ./docker-compose.yml exp
-docker stack services exp
-docker service ps --no-trunc exp_nginx-1
-docker stack rm exp
-```
+8. Deploy stack: `docker stack deploy -c ./docker-compose.yml exp`
+9. Check all
+    - show services `docker stack services exp`
+    - if any problem with some service `docker service ps --no-trunc exp_nginx-1`
+    - if needs to remove deployed stack `docker stack rm exp`
+
 
 ### Result:
 ```
