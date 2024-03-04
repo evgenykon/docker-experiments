@@ -18,6 +18,9 @@ docker swarm join --token <from output> <ZeroTier host IP>:2377
 6. Check networks on manager `docker network ls`
 7. Create network on manager host `docker network create -d overlay experiment`
 ``` 
+docker node update --label-add TAG=ubuntu ubuntudev
+docker node update --label-add TAG=mac linuxkit-aeae2bffe88c
+
 docker stack deploy -c ./docker-compose.yml exp
 docker stack services exp
 docker service ps --no-trunc exp_nginx-1

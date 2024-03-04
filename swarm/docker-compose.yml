@@ -5,25 +5,43 @@ services:
     image: nginx
     restart: 'always'
     volumes:
-      - ./nginx/template-1/default.conf:/etc/nginx/templates/default.template
+      #- ./nginx/template-1/default.conf:/etc/nginx/templates/default.template
       - ./nginx/public-1:/usr/share/nginx/html:ro
     environment:
       - NGINX_HOST=macos.local
       - NGINX_PORT=8080
+    ports:
+      - target: 80
+        published: 8080
+        protocol: tcp
+        mode: host
     networks:
       experiment:
+    deploy:
+      placement:
+        constraints:
+          - "node.labels.TAG==host1"
 
   nginx-2:
     image: nginx
     restart: 'always'
-    volumes:
-      - ./nginx/template-2/default.conf:/etc/nginx/templates/default.template
-      - ./nginx/public-2:/usr/share/nginx/html:ro
+    #volumes:
+      #- ./nginx/template-2/default.conf:/etc/nginx/templates/default.template
+      #- ./nginx/public-2:/usr/share/nginx/html:ro
     environment:
       - NGINX_HOST=ubuntu.local
       - NGINX_PORT=8081
+    expose:
+      - "81"
     networks:
       experiment:
+    deploy:
+      placement:
+        constraints:
+          - "node.labels.TAG==host2"
+#      replicas: 2
 
 networks:
   experiment:
+    driver: overlay
+    attachable: true
