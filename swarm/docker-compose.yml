@@ -35,8 +35,6 @@ services:
     environment:
       - NGINX_HOST=ubuntu.local
       - NGINX_PORT=8081
-    expose:
-      - "81"
     networks:
       experiment:
     deploy:
