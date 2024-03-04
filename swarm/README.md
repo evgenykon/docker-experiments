@@ -50,6 +50,6 @@ docker node update --label-add TAG=host2 <node id>
 # curl localhost:80
 <h1> Nginx from node 1 </h1>
 
-# curl lcoalhost:81
+# curl localhost:81
 <h1> Nginx from node 2 </h1>
 ```
