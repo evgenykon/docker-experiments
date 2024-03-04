@@ -25,7 +25,7 @@ services:
   nginx-2:
     image: nginx
     volumes:
-      - ./nginx/template-2/default.conf:/etc/nginx/templates/default.template
+      - ./nginx/template-2/default.conf:/etc/nginx/templates/default.conf.template
       - ./nginx/public-2:/usr/share/nginx/html:ro
     networks:
       experiment:
