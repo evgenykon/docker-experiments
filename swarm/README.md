@@ -1,15 +1,15 @@
 # Docker network with Swarm
 
 ```mermaid
-flowchart LR
+flowchart TD
     Node1_port80{{Node 1:80}} --bind 80:8080--> Nginx1Service80([Nginx1 service:8080])
     Nginx1Service80 --swarm host 1--> Nginx1_8080([Nginx1:8080])
-    Nginx1_8080 --file resolving--> Response
+    Nginx1_8080 --file resolving--> Response1
     Node1_port81{{Node 1:81}} --bind 81:8081--> Nginx1Service81([Nginx1 service:8081])
     Nginx1Service81 --swarm host 1--> Nginx1_8081([Nginx1:8081])
     Nginx1_8081 --proxy pass--> Nginx2Service82([Nginx2 service:8082])
     Nginx2Service82 --swarm host 2--> Nginx2_8082([Nginx2:8082])
-    Nginx2_8082 --file resolving--> Response
+    Nginx2_8082 --file resolving--> Response2
 ```
 
 ### my steps
