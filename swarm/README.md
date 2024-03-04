@@ -17,12 +17,24 @@ docker swarm join --token <from output> <ZeroTier host IP>:2377
 5. Check nodes on manager `docker node ls`
 6. Check networks on manager `docker network ls`
 7. Create network on manager host `docker network create -d overlay experiment`
+8. Setup labels for nodes:
 ``` 
 docker node update --label-add TAG=ubuntu ubuntudev
 docker node update --label-add TAG=mac linuxkit-aeae2bffe88c
-
+```
+9. Deploy stack
+```
 docker stack deploy -c ./docker-compose.yml exp
 docker stack services exp
 docker service ps --no-trunc exp_nginx-1
 docker stack rm exp
+```
+
+### Result:
+```
+# curl localhost:80
+<h1> Nginx from node 1 </h1>
+
+# curl lcoalhost:81
+<h1> Nginx from node 2 </h1>
 ```
