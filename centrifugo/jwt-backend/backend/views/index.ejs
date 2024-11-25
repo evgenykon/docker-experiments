@@ -1,0 +1,172 @@
+<!-- index.ejs --->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <title>JWT for Centrifuge</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css"
+    />
+    <script src="https://unpkg.com/centrifuge@5.0.1/dist/centrifuge.js"></script>
+  </head>
+  <body class="p-2">
+    <div class="container">
+        <section class="hero">
+          <div class="hero-body">
+            <p class="title is-size-4">JWT for Centrifuge</p>
+          </div>
+        </section>
+    </div>
+    <div class="container mb-6">
+        <div class="field">
+            <label class="label">Allowed user ID</label>
+            <div class="control">
+                <input class="input" type="text" id="userId" value="123" />
+            </div>
+        </div>
+        <div class="field">
+            <button class="button request-jwt-btn">Request for JWT</button>
+        </div>
+        <div class="field">
+            <label class="label">JWT</label>
+            <div class="control">
+                <textarea class="textarea" id="jwt" rows="2"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="container mb-6">
+        <div class="block mb-2">
+            Status <span class="tag is-black status-label">Not connected</span>
+        </div>
+        <button class="button connect-btn">Connect to Centrifugo Websocket</button>
+    </div>
+
+    <div class="container">
+        <div class="field">
+            <label class="label">Channel</label>
+            <div class="control">
+                <input class="input" type="text" id="channel" value="channel" />
+            </div>
+        </div>
+        <div class="block mb-2">
+            Status <span class="tag is-black channel-status-label">Not subscribed</span>
+        </div>
+        <button class="button subscribe-btn mb-2">Subscribe to channel</button>
+        <div class="container">
+            <div class="block mb-2 is-size-4">
+                Received channel messages
+            </div>
+            <div class="messages">
+
+            </div>
+        </div>
+    </div>
+
+  </body>
+
+  <script>
+
+      const app = {
+          centrifuge : null
+      }
+
+      const makeJwtRequest = async () => {
+          const userId = document.querySelector('#userId').value;
+          if (!userId || isNaN(parseInt(userId))) {
+              throw new Error('Bad user id')
+          }
+          const response = await fetch('/jwt', {method: 'POST', headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({user_id: userId})
+          })
+          const result = await response.json()
+          if (result.token) {
+              document.querySelector('#jwt').value = result.token
+          } else {
+              console.error('Token not parsed')
+          }
+      }
+
+      const getAllowedToken = () => {
+          const token = document.querySelector('#jwt').value
+          if (!token) {
+              throw Error('Token not found')
+          }
+          return token;
+      }
+
+      const showConnectStatus = (value) => {
+          document.querySelector('.status-label').innerHTML = value
+      }
+
+      const bindCentrifugeHandlers = () => {
+          if (!app.centrifuge) {
+              throw Error('Centrifuge client not initialized')
+          }
+          app.centrifuge.on('connecting', function (ctx) {
+              showConnectStatus('Connecting')
+              console.log(`connecting: ${ctx.code}, ${ctx.reason}`);
+          }).on('connected', function (ctx) {
+              showConnectStatus('Connected')
+              console.log(`connected over ${ctx.transport}`);
+          }).on('disconnected', function (ctx) {
+              showConnectStatus(`Disconnected: ${ctx.code}, ${ctx.reason}`)
+              console.log(`disconnected: ${ctx.code}, ${ctx.reason}`);
+          }).on('error', (err) => {
+              showConnectStatus(`Error ${err.message}`)
+              console.error(err)
+          })
+      }
+
+      const connectToCentrifugo = async () => {
+          const token = getAllowedToken();
+          app.centrifuge = new Centrifuge("ws://localhost:8000/connection/websocket", {token});
+          bindCentrifugeHandlers();
+          app.centrifuge.connect();
+      }
+
+      const showSubscribeStatus = (value) => {
+          document.querySelector('.channel-status-label').innerHTML = value
+      }
+
+      const subscribe = async () => {
+          const channelName = document.querySelector('#channel').value
+          if (!channelName) {
+              throw Error('Channel name not defined')
+          }
+          if (!app.centrifuge) {
+              throw Error('Centrifuge client not initialized')
+          }
+          if (document.querySelector('.status-label').innerHTML !== 'Connected') {
+              throw Error('Centrifuge client not connected')
+          }
+          const sub = app.centrifuge.newSubscription(channelName);
+          const messagesContainer = document.querySelector('.messages');
+
+          sub.on('publication', function (ctx) {
+              const message = ctx.data.message
+              if (!message) {
+                  showSubscribeStatus('Subscribed, receive unsupported message type')
+              }
+              messagesContainer.innerHTML += `<p class="message-body">${message}</p>`;
+          }).on('subscribing', function (ctx) {
+              showSubscribeStatus('Subscribing')
+              console.log(`subscribing: ${ctx.code}, ${ctx.reason}`);
+          }).on('subscribed', function (ctx) {
+              showSubscribeStatus('Subscribed')
+              console.log('subscribed', ctx);
+          }).on('unsubscribed', function (ctx) {
+              showSubscribeStatus(`Unsubscribed: ${ctx.code}, ${ctx.reason}`)
+              console.log(`unsubscribed: ${ctx.code}, ${ctx.reason}`);
+          }).subscribe();
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+          document.querySelector('.request-jwt-btn').addEventListener('click', makeJwtRequest);
+          document.querySelector('.connect-btn').addEventListener('click', connectToCentrifugo);
+          document.querySelector('.subscribe-btn').addEventListener('click', subscribe);
+      })
+  </script>
+</html>

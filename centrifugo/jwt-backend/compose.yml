@@ -1,0 +1,24 @@
+services:
+
+  centrifugo:
+    container_name: centrifugo
+    image: centrifugo/centrifugo:v5
+    volumes:
+      - ./centrifugo/config.json:/centrifugo/config.json
+    command: centrifugo -c config.json
+    ports:
+      - 8000:8000
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+
+  backend:
+    container_name: backend
+    image: node:20
+    volumes:
+      - ./backend:/app
+    working_dir: /app
+    ports:
+      - 3000:3000
+    command: "npm run dev"
