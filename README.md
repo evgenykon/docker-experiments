@@ -4,4 +4,4 @@
 2. [Reverse proxies](./reverse-proxy/README.md)
 3. [Load testing by Taurus](./taurus/README.md)
 4. [Docker swarm networking with different nodes](./swarm/README.md)
-5. [Centrifugo in docker with node backend](./centrifugo/)
+5. [Centrifugo in docker](./centrifugo/)
