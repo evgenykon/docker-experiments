@@ -11,7 +11,10 @@
     const container = document.getElementById('counter');
 
     const centrifuge = new Centrifuge("ws://localhost:8000/connection/websocket", {
+        // this token already expired
+        // use `./centrifugo gentoken -u 123722` to generate new
         token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM3MjIiLCJleHAiOjE3MzMxMjI2MTQsImlhdCI6MTczMjUxNzgxNH0.jt2L24tXb8eJuO6n09oZCFZ6zBqY1tCbNKl-9OnQ9Fg"
+        // decoded: {"alg":"HS256","typ":"JWT"}.{"sub":"123722","exp":1733122614,"iat":1732517814}.<sign>
     });
 
     centrifuge.on('connecting', function (ctx) {
