@@ -7,10 +7,6 @@ server {
     access_log      /dev/stdout;
     error_log       /dev/stderr;
 
-    #location /pass {
-    #    proxy_pass  http://base:8181;
-    #}
-
     location /pass {
         rewrite ^/pass/(.*)$ /$1 break;
         try_files $uri $uri/ @proxy;
