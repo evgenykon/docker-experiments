@@ -5,3 +5,4 @@
 3. [Load testing by Taurus](./taurus/README.md)
 4. [Docker swarm networking with different nodes](./swarm/README.md)
 5. [Centrifugo in docker](./centrifugo/)
+6. [Nginx Proxy Subpath](nginx-proxy-subpath/README.md)

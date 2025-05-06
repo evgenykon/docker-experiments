@@ -1,0 +1,23 @@
+services:
+  proxy:
+    image: nginx:latest
+    volumes:
+      - ./conf/proxy:/etc/nginx/templates
+      - ./html/proxy:/var/www
+    ports:
+      - "8080:8080"
+    networks:
+      - nginx
+
+  base:
+    image: nginx:latest
+    volumes:
+      - ./conf/base:/etc/nginx/templates
+      - ./html/base:/var/www
+    ports:
+      - "8181:8181"
+    networks:
+      - nginx
+
+networks:
+  nginx:

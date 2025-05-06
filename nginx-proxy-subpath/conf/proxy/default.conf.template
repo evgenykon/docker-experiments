@@ -1,0 +1,29 @@
+server {
+    server_name     default_server;
+    listen          8080;
+    listen          [::]:8080;
+    charset         UTF-8;
+    index           index.html;
+    access_log      /dev/stdout;
+    error_log       /dev/stderr;
+
+    #location /pass {
+    #    proxy_pass  http://base:8181;
+    #}
+
+    location /pass {
+        try_files $uri $uri/ @proxy$args;
+    }
+
+    location @proxy {
+        proxy_buffering         off;
+        proxy_pass              http://base:8181;
+        proxy_redirect          off;
+        proxy_read_timeout      20s;
+    }
+
+    location / {
+        root            /var/www/;
+        try_files       $uri /index.html;
+    }
+}
