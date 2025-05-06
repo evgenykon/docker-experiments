@@ -12,7 +12,8 @@ server {
     #}
 
     location /pass {
-        try_files $uri $uri/ @proxy$args;
+        rewrite ^/pass/(.*)$ /$1 break;
+        try_files $uri $uri/ @proxy;
     }
 
     location @proxy {
